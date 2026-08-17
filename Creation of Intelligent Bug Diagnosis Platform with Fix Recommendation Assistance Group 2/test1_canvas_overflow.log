@@ -1,0 +1,6 @@
+[FATAL] Thread "MainRenderThread" crashed with SIGSEGV.
+Exception: std::runtime_error::NullPointer
+  at Mozilla::layers::CanvasRenderer::Render(CanvasRenderer.cpp:342)
+  at Mozilla::gl::GLContext::UploadTextures(GLContext.cpp:1204)
+  at memory address mapping 0x7FFF8000A2C0 bounds violation.
+Details: Requested texture size (18000px) exceeds maximum hardware acceleration capacity (16384px).

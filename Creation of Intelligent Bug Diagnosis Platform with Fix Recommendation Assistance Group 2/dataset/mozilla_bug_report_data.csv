@@ -1,0 +1,4 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+BUG-MOZ-7049,Core::CanvasRenderer,Critical,P0,Crash in CanvasRenderer::Render when texture dimension exceeds GPU limit.,"Mozilla::layers::CanvasRenderer::Render(CanvasRenderer.cpp:342)
+at Mozilla::gl::GLContext::UploadTextures(GLContext.cpp:1204)",Clamped maximum texture coordinates prior to GPU allocation.,af8e12d3b4b8a927e
+BUG-MOZ-9912,DOM::WebAudio,High,P1,AudioWorklet thread deadlock during sample rate reconfiguration.,AudioWorkletNode::Process at dom/media/webaudio/AudioWorkletNode.cpp:512,Used atomic spinlocks for sample buffer swaps.,554901efac992014

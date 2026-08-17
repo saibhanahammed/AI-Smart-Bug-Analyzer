@@ -1,0 +1,4 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+ECLIPSE-40182,JDT::Compiler,Critical,P1,NullPointerException during parameterized lambda expression binding.,"org.eclipse.jdt.internal.compiler.lookup.ConstraintFormula.reduce(ConstraintFormula.java:142)
+at org.eclipse.jdt.internal.compiler.lookup.TypeBound.<init>(TypeBound.java:31)",Fixed compiler type binding null reference checks.,c4a5b6d7e829fa771
+ECLIPSE-51209,Platform::UI,Medium,P2,Workbench window layout corrupted on multimonitor workspace restore.,org.eclipse.ui.internal.WorkbenchWindow.restoreState(WorkbenchWindow.java:820),Enforced bounds validation across secondary display contexts.,7b91d2ef0182a39b

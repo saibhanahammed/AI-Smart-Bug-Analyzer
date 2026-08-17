@@ -1,0 +1,5 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+GCC-98124,tree-optimization,High,P1,Internal Compiler Error: Segmentation fault during loop vectorization pass.,"internal compiler error: in vect_transform_loop, at tree-vect-loop.c:8920
+0x11a9f02 crash_signal
+/gcc/toplev.c:328",Prevented vectorizer reduction lookup on uninitialized tree node.,fa99812c300891de
+GCC-87421,c++-parser,Medium,P2,Malformed constexpr template evaluation crashes AST parser.,cp_parser_constexpr_expression at cp/parser.c:4102,Added syntax recursion depth limitation.,331ad889efc01289

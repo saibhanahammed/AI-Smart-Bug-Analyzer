@@ -1,0 +1,4 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+WINE-49210,ntdll::virtual_mem,High,P1,Page fault inside NtAllocateVirtualMemory when running 32-bit binaries.,"Unhandled page fault on write access to 0x00000004 in 32-bit code (0x7bc42080)
+at ntdll/virtual.c:1820",Mapped low memory allocation limits for legacy execution contexts.,66bc8912ef001923
+WINE-38910,d3d11::shader,Medium,P2,Direct3D 11 shader compilation fails for compute shaders with unaligned buffers.,wined3d_cs_exec_dispatch (wined3d/cs.c:1405),Aligned uniform buffer strides to 16-byte boundaries.,a098ef1284723019

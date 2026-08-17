@@ -1,0 +1,4 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+FDO-10829,Mesa::Radeon,Critical,P0,GPU lockup during Vulkan texture upload pipeline.,"radeon_drm_cs_emit_ioctl at drivers/gpu/drm/radeon/radeon_cs.c:452
+Bounds error on ring buffer 0x7FFF98A2",Added ring buffer synchronization fence.,98f21bc0891d4e5a
+FDO-31902,X11::Server,High,P1,Memory leak in XI2 event mask processing under continuous device query.,mieqProcessDeviceEvent at dix/events.c:1120,Freed detached pointer context in device destruction callback.,14de78bc89ef23a0

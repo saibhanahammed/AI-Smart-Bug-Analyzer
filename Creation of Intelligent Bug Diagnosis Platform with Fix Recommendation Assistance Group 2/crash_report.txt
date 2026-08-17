@@ -1,0 +1,5 @@
+<error_log_payload>
+Exception in thread "main" std::runtime_error: Fatal connection leak detected inside thread context.
+  at Mozilla::layers::CanvasRenderer::Render(CanvasRenderer.cpp:342)
+  at memory reference address mapping 0x7FFF8C23A1F2 bounds violation.
+</error_log_payload>

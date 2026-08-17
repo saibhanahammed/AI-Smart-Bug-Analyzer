@@ -1,0 +1,5 @@
+2026-07-23T18:12:01.882Z [CRITICAL] worker_node_02.core.engine
+Traceback (most recent call last):
+  File "app/services/data_processor.py", line 142, in process_stream
+    buffer.append(stream.read())
+MemoryError: Unable to allocate 1.02 GiB buffer at httpd::mod_ssl filter_io_shutdown.

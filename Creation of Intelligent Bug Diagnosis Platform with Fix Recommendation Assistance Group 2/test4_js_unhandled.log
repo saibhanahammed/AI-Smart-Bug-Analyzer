@@ -1,0 +1,4 @@
+UnhandledPromiseRejection: TypeError: Cannot read properties of undefined (reading 'status')
+  at AuthProvider.checkSession (src/context/AuthContext.js:54:21)
+  at async handleTokenRefresh (src/utils/apiClient.js:102:9)
+  at processTicksAndRejections (node:internal/process/task_queues:95:5)

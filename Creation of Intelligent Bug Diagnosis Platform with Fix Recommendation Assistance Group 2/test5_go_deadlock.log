@@ -1,0 +1,6 @@
+fatal error: all goroutines are asleep - deadlock!
+goroutine 1 [chan receive]:
+main.processQueue(0xc00008e000)
+  /src/gateway/proxy_handler.go:88 +0x65
+main.main()
+  /src/gateway/main.go:34 +0x42

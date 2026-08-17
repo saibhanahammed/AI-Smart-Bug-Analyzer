@@ -1,0 +1,4 @@
+bug_id,component,severity,priority,description,stack_trace,resolution,fix_commit
+GNOME-78210,Mutter::Compositor,Critical,P0,Wayland display manager crashes on multi-touch gesture swipe.,"meta_display_handle_event (meta-display.c:1840)
+at /usr/lib/libmutter.so.0 [0x7f99b24010]",Added non-null verification for touch surface descriptors.,88ac912bf0082341
+GNOME-65490,GTK::GtkListView,Low,P3,High CPU usage during list item unbinding in large data models.,gtk_list_item_widget_unbind (gtklistitemwidget.c:302),Debounced redraw requests during model changes.,201f98bcde772189
