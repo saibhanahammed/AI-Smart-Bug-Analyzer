@@ -1,8 +1,15 @@
-from agents.log_agent import run_log_analysis_agent
-from agents.triage_agent import run_triage_agent
-from agents.root_cause_agent import run_root_cause_agent
-from agents.duplicate_agent import run_duplicate_detection_agent
-from agents.remediation_agent import run_remediation_agent
+try:
+    from triage_agent import evaluate_severity_and_priority
+    from log_agent import analyze_stack_trace
+    from root_cause_agent import generate_root_cause_hypothesis
+    from duplicate_agent import find_duplicate_tickets
+    from remediation_agent import generate_remediation_patch
+except ImportError:
+    from agents.triage_agent import evaluate_severity_and_priority
+    from agents.log_agent import analyze_stack_trace
+    from agents.root_cause_agent import generate_root_cause_hypothesis
+    from agents.duplicate_agent import find_duplicate_tickets
+    from agents.remediation_agent import generate_remediation_patch
 
 def execute_multi_agent_pipeline(cleaned_log: str, vector_match: dict) -> dict:
     """Orchestrates all Milestone 3 AI agents sequentially."""
