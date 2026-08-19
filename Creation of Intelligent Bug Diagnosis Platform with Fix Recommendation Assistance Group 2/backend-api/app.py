@@ -1,24 +1,33 @@
+import os
+import sys
+from typing import Optional
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
-from typing import Optional
 from pydantic import BaseModel
+
+# Ensure local imports resolve whether executed from root or backend-api
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
 from preprocessor import clean_log_telemetry
 from chunker import generate_text_chunks
 from vector_store import (
-    query_knowledge_base, 
-    add_resolved_bug_to_knowledge_base, 
+    query_knowledge_base,
+    add_resolved_bug_to_knowledge_base,
     compute_defect_analytics,
     DYNAMIC_KNOWLEDGE_BASE
 )
 from agents.orchestrator import execute_multi_agent_pipeline
 
-# In backend-api/app.py
 app = FastAPI(
     title="Creation of Intelligent Bug Diagnosis Platform with Fix Recommendation Assistance Group 2",
-    description="Multi-Agent AI Platform for Log Analysis, Root Cause Hypothesis, and Fix Recommendations"
+    description="Multi-Agent AI Platform for Log Analysis, Root Cause Hypothesis, and Fix Recommendations",
+    version="1.0.0"
 )
 
+# Enable CORS for local development and cloud hosting
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,86 +42,75 @@ class ConfirmFixPayload(BaseModel):
     description: str
     fix_commit: str
 
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_frontend():
+    """Locates and serves frontend-ui/index.html across local and cloud file paths."""
+    search_paths = [
+        os.path.join(CURRENT_DIR, "..", "frontend-ui", "index.html"),
+        os.path.join(CURRENT_DIR, "frontend-ui", "index.html"),
+        os.path.join(CURRENT_DIR, "..", "frontend-ui", "src", "index.html"),
+        os.path.join(CURRENT_DIR, "index.html"),
+    ]
+    for path in search_paths:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return f.read()
+
+    return "<h2>Intelligent Bug Diagnosis Platform API is running. Check /docs for Swagger UI.</h2>"
+
+
+@app.get("/api/v1/analytics")
+async def get_analytics():
+    """Returns real-time aggregated defect distribution and knowledge base metrics."""
+    try:
+        data = compute_defect_analytics()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analytics computation error: {str(e)}")
+
+
 @app.post("/api/v1/analyze-log")
-async def analyze_log_file(
+async def analyze_log(
     file: Optional[UploadFile] = File(None),
     summary: Optional[str] = Form("")
 ):
+    """Processes uploaded crash logs and triggers the 5-agent sequential pipeline."""
     try:
-        log_text = ""
-        file_name = "Manual Summary Input"
-        
-        if file:
-            if not file.filename.endswith(('.txt', '.log')):
-                raise HTTPException(status_code=400, detail="Invalid format. Accepts .txt or .log files.")
-            raw_content = await file.read()
-            log_text = raw_content.decode("utf-8")
-            file_name = file.filename
-        elif summary:
-            log_text = summary
-        else:
-            raise HTTPException(status_code=400, detail="Please upload a file or enter an issue summary.")
+        content = ""
+        if file is not None:
+            raw_bytes = await file.read()
+            content = raw_bytes.decode("utf-8", errors="ignore")
 
-        cleaned = clean_log_telemetry(log_text)
-        chunks = generate_text_chunks(cleaned)
-        matched_defect = query_knowledge_base(log_text)
-        
-        agent_results = execute_multi_agent_pipeline(cleaned, matched_defect)
+        combined_text = f"{summary.strip()}\n{content.strip()}".strip()
+        if not combined_text:
+            raise HTTPException(status_code=400, detail="No log content or issue summary provided.")
 
-        return {
-            "status": "success",
-            "file_name": file_name,
-            "triage": {
-                "severity": agent_results["triage"]["severity"],
-                "priority": agent_results["triage"]["priority"],
-                "component": agent_results["triage"]["affected_component"],
-                "confidence": int(agent_results["triage"]["confidence_score"] * 100),
-                "reasoning": agent_results["triage"]["triage_reasoning"]
-            },
-            "logAnalysis": {
-                "exceptionType": agent_results["log_analysis"]["exception_type"],
-                "failurePoint": agent_results["log_analysis"]["failure_point"],
-                "path": agent_results["log_analysis"]["affected_code_path"],
-                "nextStep": "Verify stack trace parameters and inspect dependent resource connections."
-            },
-            "rootCause": {
-                "hypothesis": agent_results["root_cause"]["root_cause_hypothesis"],
-                "confidence": int(agent_results["root_cause"]["confidence_score"] * 100),
-                "supportingEvidence": agent_results["root_cause"]["supporting_evidence"]
-            },
-            "duplicates": [
-                {
-                    "id": item["bug_id"],
-                    "similarity": int(item.get("score", 0.85) * 100),
-                    "title": item["description"],
-                    "resolution": f"Resolved in commit {item['fix_commit']}."
-                } for item in DYNAMIC_KNOWLEDGE_BASE[:3]
-            ],
-            "remediation": {
-                "suggestedFix": agent_results["remediation"]["suggested_fix"],
-                "bestPractices": agent_results["remediation"]["best_practice_guidelines"]
-            }
-        }
+        # Execute multi-agent diagnostic orchestration
+        analysis_result = execute_multi_agent_pipeline(combined_text)
+        return analysis_result
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Pipeline Processing Fault: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Multi-Agent Execution Fault: {str(e)}")
 
-@app.get("/api/v1/analytics")
-def get_analytics():
-    """Returns real-time Defect Pattern Analytics data."""
-    return compute_defect_analytics()
 
 @app.post("/api/v1/feedback/confirm-fix")
-def confirm_and_grow_knowledge_base(payload: ConfirmFixPayload):
-    """Adds a resolved fix to the Knowledge Base."""
-    added_entry = add_resolved_bug_to_knowledge_base(payload.dict())
-    return {
-        "status": "success",
-        "message": "Resolved bug successfully embedded into the vector database knowledge base.",
-        "entry": added_entry,
-        "analytics": compute_defect_analytics()
-    }
+async def confirm_fix(payload: ConfirmFixPayload):
+    """Dynamically indexes validated bug fixes into the persistent vector store."""
+    try:
+        entry = add_resolved_bug_to_knowledge_base(
+            component=payload.component,
+            severity=payload.severity,
+            description=payload.description,
+            fix_commit=payload.fix_commit
+        )
+        return {"status": "success", "message": "Fix added to Knowledge Base", "entry": entry}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Knowledge Base Indexing Error: {str(e)}")
 
-@app.get("/", response_class=HTMLResponse)
-def serve_dashboard():
-    with open("../frontend-ui/index.html", "r", encoding="utf-8") as f:
-        return f.read()
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "Intelligent Bug Diagnosis Platform"}
