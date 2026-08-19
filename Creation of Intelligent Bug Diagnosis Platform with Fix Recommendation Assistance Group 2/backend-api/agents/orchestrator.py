@@ -1,39 +1,40 @@
-try:
-    from triage_agent import evaluate_severity_and_priority
-    from log_agent import analyze_stack_trace
-    from root_cause_agent import generate_root_cause_hypothesis
-    from duplicate_agent import find_duplicate_tickets
-    from remediation_agent import generate_remediation_patch
-except ImportError:
-    from agents.triage_agent import evaluate_severity_and_priority
-    from agents.log_agent import analyze_stack_trace
-    from agents.root_cause_agent import generate_root_cause_hypothesis
-    from agents.duplicate_agent import find_duplicate_tickets
-    from agents.remediation_agent import generate_remediation_patch
+import os
+import sys
 
-def execute_multi_agent_pipeline(cleaned_log: str, vector_match: dict) -> dict:
-    """Orchestrates all Milestone 3 AI agents sequentially."""
-    
-    # 1. Log Analysis
-    log_results = run_log_analysis_agent(cleaned_log)
-    
-    # 2. Triage Classification
-    triage_results = run_triage_agent(log_results, vector_match)
-    
+# Ensure agent modules can resolve relative to this directory
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
+from triage_agent import evaluate_severity_and_priority
+from log_agent import analyze_stack_trace
+from root_cause_agent import generate_root_cause_hypothesis
+from duplicate_agent import find_duplicate_tickets
+from remediation_agent import generate_remediation_patch
+
+def execute_multi_agent_pipeline(raw_log_text: str, summary: str = "") -> dict:
+    """
+    Sequential multi-agent orchestration pipeline passing context across all 5 agents.
+    """
+    # 1. Triage Agent
+    triage = evaluate_severity_and_priority(raw_log_text, summary)
+
+    # 2. Log Analysis Agent
+    log_analysis = analyze_stack_trace(raw_log_text)
+
     # 3. Root Cause Agent (RAG Grounded)
-    root_cause_results = run_root_cause_agent(log_results, vector_match)
-    
+    root_cause = generate_root_cause_hypothesis(raw_log_text, log_analysis, triage)
+
     # 4. Duplicate Detection Agent
-    duplicate_results = run_duplicate_detection_agent(cleaned_log)
-    
-    # 5. Remediation Agent
-    remediation_results = run_remediation_agent(root_cause_results, log_results)
-    
+    duplicates = find_duplicate_tickets(raw_log_text, triage.get("component", "General"))
+
+    # 5. Remediation Fix Advisor Agent
+    remediation = generate_remediation_patch(root_cause, log_analysis, triage)
+
     return {
-        "orchestration_status": "Success",
-        "log_analysis": log_results,
-        "triage": triage_results,
-        "root_cause": root_cause_results,
-        "duplicates": duplicate_results,
-        "remediation": remediation_results
+        "triage": triage,
+        "logAnalysis": log_analysis,
+        "rootCause": root_cause,
+        "duplicateMatches": duplicates,
+        "remediation": remediation
     }
