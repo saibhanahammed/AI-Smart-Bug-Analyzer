@@ -50,7 +50,7 @@
 
             const fetchAnalytics = async () => {
                 try {
-                    const res = await fetch("http://127.0.0.1:8000/api/v1/analytics");
+                    const res = await fetch("/api/v1/analytics");
                     if (res.ok) {
                         const data = await res.json();
                         setAnalyticsData(data);
@@ -75,7 +75,7 @@
                 formData.append("summary", issueSummary);
 
                 try {
-                    const response = await fetch("http://127.0.0.1:8000/api/v1/analyze-log", {
+                    const response = await fetch("/api/v1/analyze-log", {
                         method: "POST",
                         body: formData
                     });
@@ -98,7 +98,7 @@
                         description: analysisResults.rootCause.hypothesis,
                         fix_commit: "patch-sha-" + Math.random().toString(36).substring(2, 9)
                     };
-                    const res = await fetch("http://127.0.0.1:8000/api/v1/feedback/confirm-fix", {
+                    const res = await fetch("/api/v1/feedback/confirm-fix", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload)
