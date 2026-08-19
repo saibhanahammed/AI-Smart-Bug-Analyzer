@@ -9,30 +9,64 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display,-apple-system,BlinkMacSystemFont,Inter,sans-serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.01em;
+    }
     html, body {
       min-height: 100%;
       overflow-y: auto !important;
-      background-color: #030712;
-      color: #f1f5f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #000000;
+      color: #f5f5f7;
     }
     ::-webkit-scrollbar {
-      width: 7px;
+      width: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #060b17;
+      background: #000000;
     }
     ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 4px;
+      background: #27272a;
+      border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #0284c7;
+      background: #3f3f46;
+    }
+    .apple-glass {
+      background: rgba(255, 255, 255, 0.025);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .apple-glass-hover:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.16);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-gradient-text {
+      background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .apple-sub-gradient {
+      background: linear-gradient(180deg, #a1a1aa 0%, #71717a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pill-glow {
+      box-shadow: 0 0 20px -2px rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
-<body class="bg-[#030712] text-slate-100 min-h-screen flex flex-col antialiased">
+<body class="bg-black text-[#f5f5f7] min-h-screen flex flex-col antialiased selection:bg-white selection:text-black">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -93,7 +127,7 @@
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.detail || `Server returned ${response.status}`);
+            throw new Error(data.detail || `Server error: ${response.status}`);
           }
 
           setAnalysisResults(data);
@@ -115,7 +149,7 @@
           const payload = {
             component: triage.component || "Graphics / UI",
             severity: triage.severity || "Critical",
-            description: rootCause.hypothesis || issueSummary || "System Defect",
+            description: rootCause.hypothesis || issueSummary || "Defect Signature",
             fix_commit: "patch-sha-" + Math.random().toString(36).substring(2, 9)
           };
 
@@ -144,219 +178,263 @@
       const remediation = analysisResults?.remediation || analysisResults?.remediation_advisor || null;
 
       return (
-        <div className="min-h-screen flex flex-col bg-[#030712] text-slate-100">
+        <div className="min-h-screen flex flex-col bg-black text-[#f5f5f7]">
           
-          {/* Header */}
-          <header className="sticky top-0 z-50 border-b border-[#111827] bg-[#050b17]/95 backdrop-blur px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-3.5 cursor-pointer" onClick={() => setView("analyzer")}>
-              <div className="w-9 h-9 rounded-lg bg-[#0c1a30] border border-[#0284c7]/40 flex items-center justify-center text-cyan-400 text-sm shadow-md">
-                <i className="fa-solid fa-bug"></i>
+          {/* Apple-Style Navigation Bar */}
+          <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/70 backdrop-blur-2xl px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setView("analyzer")}>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-b from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-white text-xs">
+                <i className="fa-solid fa-microchip"></i>
               </div>
               <div>
-                <h1 className="text-base font-semibold text-white tracking-wide">Intelligent Bug Diagnosis Platform</h1>
-                <p className="text-xs text-slate-400 font-normal">Autonomous AI Multi-Agent Triage, Root-Cause & Remediation System</p>
+                <h1 className="text-sm font-semibold tracking-tight text-white">Intelligent Bug Diagnosis Platform</h1>
+                <p className="text-[11px] text-zinc-500 font-normal">Autonomous AI Multi-Agent Diagnostic Engine</p>
               </div>
             </div>
 
-            {/* Top Navigation Tabs */}
-            <div className="flex items-center gap-2 bg-[#0a101f] p-1 rounded-xl border border-[#1e293b]">
+            {/* Frosted Floating Pill Menu */}
+            <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-full border border-white/[0.08] backdrop-blur-md">
               <button
                 onClick={() => setView("analyzer")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  view === "analyzer" ? "bg-[#0284c7] text-white shadow-md shadow-cyan-950" : "text-slate-400 hover:text-slate-200"
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  view === "analyzer" ? "bg-white text-black font-semibold shadow-sm" : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <i className="fa-solid fa-magnifying-glass mr-1.5"></i> Defect Analyzer
+                Defect Analyzer
               </button>
 
               <button
                 onClick={() => setView("analytics")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  view === "analytics" ? "bg-[#0284c7] text-white shadow-md shadow-cyan-950" : "text-slate-400 hover:text-slate-200"
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  view === "analytics" ? "bg-white text-black font-semibold shadow-sm" : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <i className="fa-solid fa-chart-pie mr-1.5"></i> Pattern Analytics
+                Pattern Analytics
               </button>
 
               <button
                 onClick={() => setView("techstack")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  view === "techstack" ? "bg-[#0284c7] text-white shadow-md shadow-cyan-950" : "text-slate-400 hover:text-slate-200"
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  view === "techstack" ? "bg-white text-black font-semibold shadow-sm" : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <i className="fa-solid fa-layer-group mr-1.5"></i> Tech Stack
+                Tech Stack
               </button>
 
               <button
                 onClick={() => setView("faqs")}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  view === "faqs" ? "bg-[#0284c7] text-white shadow-md shadow-cyan-950" : "text-slate-400 hover:text-slate-200"
+                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  view === "faqs" ? "bg-white text-black font-semibold shadow-sm" : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <i className="fa-solid fa-circle-question mr-1.5"></i> FAQ's
+                FAQ's
               </button>
             </div>
           </header>
 
-          {/* Main View Area */}
-          <main className="flex-1 w-full max-w-7xl mx-auto p-6 md:p-8 space-y-8">
+          {/* Main Content Area */}
+          <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-12 md:py-16 space-y-12">
             
             {/* VIEW 1: DEFECT ANALYZER */}
             {view === "analyzer" && (
-              <div className="space-y-8">
-                {/* Intake Card */}
-                <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-7 shadow-xl space-y-5">
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] flex items-center">
-                    <i className="fa-solid fa-arrow-right-to-bracket mr-2"></i> DEFECT INTAKE MODULE
+              <div className="space-y-12">
+                
+                {/* Hero Header */}
+                <div className="text-center space-y-3 max-w-2xl mx-auto pt-2">
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight apple-gradient-text">
+                    Diagnose in seconds.
                   </h2>
+                  <p className="text-sm md:text-base text-zinc-400 font-normal leading-relaxed">
+                    Ingest multiline system telemetry to trigger autonomous triage, RAG root-cause hypotheses, and verified code remediations.
+                  </p>
+                </div>
 
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-slate-300">Describe the Issue (One Line)</label>
+                {/* Intake Module */}
+                <div className="apple-glass rounded-3xl p-8 md:p-10 space-y-6 shadow-2xl">
+                  <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    <span>Defect Intake Module</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-medium text-zinc-400">Issue Summary</label>
                     <input
                       type="text"
                       value={issueSummary}
                       onChange={(e) => setIssueSummary(e.target.value)}
                       placeholder="e.g., CanvasRenderer texture dimension overflow on image upload"
-                      className="w-full bg-[#050914] border border-[#1e293b] rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-[#0284c7] transition"
+                      className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-white/30 rounded-2xl px-5 py-4 text-sm text-white placeholder-zinc-600 focus:outline-none transition"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-slate-300">Upload Telemetry / Log File</label>
-                    <div className="border border-dashed border-[#1e293b] hover:border-[#0284c7]/50 bg-[#050914]/80 rounded-xl p-8 text-center transition cursor-pointer relative group">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-medium text-zinc-400">Telemetry / Log File</label>
+                    <div className="border border-dashed border-white/[0.12] hover:border-white/30 bg-white/[0.015] rounded-2xl p-10 text-center transition cursor-pointer relative group">
                       <input
                         type="file"
                         onChange={handleFileUpload}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
-                      <i className="fa-solid fa-file-lines text-2xl text-slate-500 group-hover:text-cyan-400 transition-colors mb-2"></i>
-                      <p className="text-xs text-slate-400">
+                      <i className="fa-solid fa-arrow-up-from-bracket text-2xl text-zinc-500 group-hover:text-white transition-colors mb-3"></i>
+                      <p className="text-sm text-zinc-400 font-normal">
                         {fileName ? (
-                          <span className="text-[#38bdf8] font-medium">Selected: {fileName}</span>
+                          <span className="text-white font-medium">{fileName}</span>
                         ) : (
-                          "Drop your .LOG or .TXT error trace here or click to browse"
+                          "Drop raw .log or .txt error trace here or browse file"
                         )}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex justify-end pt-1">
+                  <div className="flex justify-end pt-2">
                     <button
                       onClick={runDefectAnalysis}
                       disabled={isAnalyzing}
-                      className="px-6 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-semibold rounded-xl shadow-lg shadow-cyan-950/50 disabled:opacity-50 transition flex items-center"
+                      className="px-8 py-3.5 bg-white hover:bg-zinc-200 text-black text-xs font-semibold uppercase tracking-wider rounded-full transition disabled:opacity-50 flex items-center shadow-lg shadow-white/10"
                     >
                       {isAnalyzing ? (
                         <>
-                          <i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Executing Multi-Agent Pipeline...
+                          <i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Analyzing...
                         </>
                       ) : (
-                        <>
-                          <i className="fa-solid fa-bolt mr-2"></i> Run Full Analysis
-                        </>
+                        "Run Full Analysis"
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* Diagnostic Findings Section */}
+                {/* Diagnostic Findings: 2 CARDS PER ROW */}
                 {analysisResults && triage && (
-                  <div className="space-y-6">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <h3 className="text-base font-bold text-white tracking-wide">Diagnostic Findings</h3>
+                  <div className="space-y-8 pt-6">
+                    
+                    <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white tracking-tight">Diagnostic Findings</h3>
+                        <p className="text-xs text-zinc-400">Autonomous 5-agent sequential execution output</p>
+                      </div>
                       <button
                         onClick={handleConfirmFixToKB}
-                        className="px-4 py-2 bg-[#06241a] border border-[#059669]/50 hover:bg-[#064e3b]/50 text-[#34d399] text-xs font-semibold rounded-xl transition flex items-center"
+                        className="px-5 py-2.5 bg-white/[0.06] border border-white/20 hover:bg-white/[0.1] text-white text-xs font-medium rounded-full transition flex items-center shadow-sm"
                       >
-                        <i className="fa-solid fa-circle-check mr-2"></i> Confirm Fix & Add to Knowledge Base
+                        <i className="fa-solid fa-check mr-2 text-zinc-400"></i> Confirm Fix & Add to Knowledge Base
                       </button>
                     </div>
 
                     {kbSuccessMsg && (
-                      <div className="p-3 bg-[#06241a] border border-[#059669]/40 rounded-xl text-xs text-[#34d399] flex items-center">
-                        <i className="fa-solid fa-check mr-2"></i> {kbSuccessMsg}
+                      <div className="p-4 bg-white/[0.04] border border-white/10 rounded-2xl text-xs text-zinc-300 flex items-center">
+                        <i className="fa-solid fa-circle-check mr-2.5 text-white"></i> {kbSuccessMsg}
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Exact 2 Columns Layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       
-                      {/* Card 1: Triage */}
-                      <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-6 space-y-4 shadow-xl">
-                        <div className="text-xs font-bold uppercase tracking-wider text-[#38bdf8] flex items-center justify-between border-b border-[#1e293b] pb-3">
-                          <span>1. TRIAGE CLASSIFICATION</span>
-                          <span className="px-2 py-0.5 rounded bg-[#0b1b33] border border-[#0284c7]/40 text-[10px] text-cyan-300 font-semibold">
-                            {triage.confidence ? `${triage.confidence}% CONF.` : "EVALUATED"}
+                      {/* Card 1: Triage Classification */}
+                      <div className="apple-glass apple-glass-hover rounded-3xl p-8 space-y-6 flex flex-col justify-between">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">1. Triage Classification</span>
+                          <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-[11px] text-zinc-300 font-medium">
+                            {triage.confidence ? `${triage.confidence}% Confidence` : "Evaluated"}
                           </span>
                         </div>
-                        <div className="text-xs space-y-2">
-                          <p><span className="text-slate-400">Severity:</span> <strong className="text-red-400 ml-1">{triage.severity || "Critical"}</strong></p>
-                          <p><span className="text-slate-400">Priority:</span> <strong className="text-yellow-400 ml-1">{triage.priority || "P0"}</strong></p>
-                          <p><span className="text-slate-400">Component:</span> <strong className="text-slate-200 ml-1">{triage.component || "Graphics / UI"}</strong></p>
+                        <div className="space-y-4 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-zinc-400">Severity</span>
+                            <span className="font-semibold text-white bg-white/[0.08] px-3 py-1 rounded-lg border border-white/10">{triage.severity || "Critical"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-zinc-400">Sprint Priority</span>
+                            <span className="font-semibold text-zinc-200">{triage.priority || "P0"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-zinc-400">Target Component</span>
+                            <span className="font-semibold text-zinc-200">{triage.component || "Graphics / UI"}</span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Card 2: Log Analysis */}
-                      <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-6 space-y-4 shadow-xl">
-                        <div className="text-xs font-bold uppercase tracking-wider text-[#38bdf8] border-b border-[#1e293b] pb-3">
-                          2. LOG TRACE EXTRACTION
+                      {/* Card 2: Log Trace Extraction */}
+                      <div className="apple-glass apple-glass-hover rounded-3xl p-8 space-y-6 flex flex-col justify-between">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">2. Log Trace Extraction</span>
+                          <i className="fa-solid fa-terminal text-zinc-500 text-xs"></i>
                         </div>
-                        <div className="text-xs space-y-2 font-mono">
-                          <p><span className="text-slate-400 font-sans">Exception:</span> <strong className="text-slate-200 ml-1">{logAnalysis?.exception_type || "NullPointerException"}</strong></p>
-                          <p className="truncate"><span className="text-slate-400 font-sans">File:</span> <strong className="text-slate-200 ml-1">{logAnalysis?.file_path || "ConstraintFormula.java"}</strong></p>
-                          <p><span className="text-slate-400 font-sans">Line:</span> <strong className="text-cyan-400 ml-1">{logAnalysis?.line_number || "142"}</strong></p>
+                        <div className="space-y-4 text-sm font-mono">
+                          <div className="flex justify-between items-center">
+                            <span className="text-zinc-400 font-sans text-xs">Exception</span>
+                            <span className="text-white font-medium">{logAnalysis?.exception_type || "SIGSEGV"}</span>
+                          </div>
+                          <div className="flex justify-between items-center truncate">
+                            <span className="text-zinc-400 font-sans text-xs">Failing File</span>
+                            <span className="text-zinc-300 text-xs truncate ml-3">{logAnalysis?.file_path || "CanvasRenderer.cpp"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-zinc-400 font-sans text-xs">Line Number</span>
+                            <span className="text-white font-medium">{logAnalysis?.line_number || "342"}</span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Card 3: Root Cause */}
-                      <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-6 space-y-4 shadow-xl">
-                        <div className="text-xs font-bold uppercase tracking-wider text-[#38bdf8] border-b border-[#1e293b] pb-3">
-                          3. ROOT CAUSE HYPOTHESIS (RAG)
+                      {/* Card 3: Root Cause Hypothesis */}
+                      <div className="apple-glass apple-glass-hover rounded-3xl p-8 space-y-5 flex flex-col justify-between">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">3. Root Cause Hypothesis (RAG)</span>
+                          <i className="fa-solid fa-atom text-zinc-500 text-xs"></i>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
+                        <p className="text-sm text-zinc-300 leading-relaxed font-normal">
                           {rootCause?.hypothesis || "Hardware canvas texture dimensions exceed GPU maximum allocation limit (16384px), triggering an unhandled graphics pipeline null reference."}
                         </p>
+                        <div className="pt-2 text-[11px] text-zinc-500">
+                          Source: Grounded ChromaDB Benchmark Verification
+                        </div>
                       </div>
 
-                      {/* Card 4: Historical Matches */}
-                      <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-6 space-y-4 shadow-xl md:col-span-2 lg:col-span-1">
-                        <div className="text-xs font-bold uppercase tracking-wider text-[#38bdf8] border-b border-[#1e293b] pb-3">
-                          4. HISTORICAL DUPLICATE MATCHES
+                      {/* Card 4: Historical Duplicate Matches */}
+                      <div className="apple-glass apple-glass-hover rounded-3xl p-8 space-y-5 flex flex-col justify-between">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">4. Historical Duplicate Matches</span>
+                          <i className="fa-solid fa-database text-zinc-500 text-xs"></i>
                         </div>
-                        <div className="space-y-2.5">
+                        <div className="space-y-3">
                           {Array.isArray(duplicates) && duplicates.length > 0 ? (
                             duplicates.slice(0, 2).map((dup, idx) => (
-                              <div key={idx} className="p-3 bg-[#050914] border border-[#1e293b] rounded-xl text-xs space-y-1">
+                              <div key={idx} className="p-3.5 bg-white/[0.02] border border-white/[0.06] rounded-2xl text-xs space-y-1">
                                 <div className="flex justify-between items-center">
-                                  <strong className="text-[#38bdf8] font-semibold">{dup.bug_id || `BUG-MOZ-${7049+idx}`}</strong>
-                                  <span className="text-[10px] text-emerald-400 font-medium">{dup.similarity || "96% Match"}</span>
+                                  <strong className="text-white font-semibold">{dup.bug_id || `BUG-MOZ-${7049+idx}`}</strong>
+                                  <span className="text-[10px] text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded-full border border-white/10">{dup.similarity || "96% Match"}</span>
                                 </div>
-                                <p className="text-slate-400 truncate text-[11px]">{dup.description || "Crash in CanvasRenderer when texture dimension exceeds GPU limit."}</p>
+                                <p className="text-zinc-400 text-xs leading-relaxed truncate">{dup.description || "Crash in CanvasRenderer when texture dimension exceeds GPU limit."}</p>
                               </div>
                             ))
                           ) : (
-                            <p className="text-xs text-slate-500">No close duplicate records detected.</p>
+                            <p className="text-xs text-zinc-500">No close historical tickets detected.</p>
                           )}
                         </div>
                       </div>
 
-                      {/* Card 5: Remediation Advice */}
-                      <div className="bg-[#090f1d] border border-[#1e293b]/80 rounded-2xl p-6 space-y-4 shadow-xl md:col-span-2 lg:col-span-2">
-                        <div className="text-xs font-bold uppercase tracking-wider text-[#38bdf8] border-b border-[#1e293b] pb-3">
-                          5. ACTIONABLE REMEDIATION & CODE PATCH
+                      {/* Card 5: Remediation Advice (Spans full width of the 2-col grid) */}
+                      <div className="md:col-span-2 apple-glass apple-glass-hover rounded-3xl p-8 md:p-10 space-y-6">
+                        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">5. Actionable Remediation & Code Patch</span>
+                          <span className="text-[11px] text-zinc-400 font-mono">Status: Ready to Apply</span>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed font-mono bg-[#050914] p-3 rounded-lg border border-[#1e293b]">
+                        <div className="p-5 bg-white/[0.02] border border-white/[0.06] rounded-2xl font-mono text-sm text-zinc-200 leading-relaxed">
                           {remediation?.advice || "Clamp texture dimensions prior to GPU upload using Math.min(inputWidth, MAX_TEXTURE_SIZE) and add a defensive fallback viewport."}
-                        </p>
-                        <div className="p-3.5 bg-[#050914]/70 border border-[#1e293b] rounded-xl text-xs space-y-1.5">
-                          <span className="text-slate-300 font-semibold">Best Practice Guidelines:</span>
-                          <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-400">
+                        </div>
+                        <div className="space-y-3 pt-2">
+                          <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">Engineering Best Practices:</span>
+                          <ul className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-zinc-400">
                             {Array.isArray(remediation?.best_practices) ? (
-                              remediation.best_practices.map((bp, i) => <li key={i}>{bp}</li>)
+                              remediation.best_practices.map((bp, i) => (
+                                <li key={i} className="p-3 bg-white/[0.015] border border-white/[0.04] rounded-xl leading-relaxed">
+                                  {bp}
+                                </li>
+                              ))
                             ) : (
                               <>
-                                <li>Enforce client-side image downscaling before dispatching to hardware pipeline.</li>
-                                <li>Verify WebGL/GPU capability bounds on context initialization.</li>
-                                <li>Wrap native graphic buffer bindings in structured try-catch blocks.</li>
+                                <li className="p-3 bg-white/[0.015] border border-white/[0.04] rounded-xl">Enforce client-side downscaling before GPU dispatch.</li>
+                                <li className="p-3 bg-white/[0.015] border border-white/[0.04] rounded-xl">Verify WebGL hardware bounds on init.</li>
+                                <li className="p-3 bg-white/[0.015] border border-white/[0.04] rounded-xl">Wrap native buffer bindings in defensive try-catch.</li>
                               </>
                             )}
                           </ul>
@@ -371,67 +449,72 @@
 
             {/* VIEW 2: PATTERN ANALYTICS */}
             {view === "analytics" && (
-              <div className="space-y-8">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] flex items-center">
-                  <i className="fa-solid fa-chart-line mr-2"></i> DEFECT PATTERN ANALYTICS
-                </h2>
+              <div className="space-y-12">
+                <div className="text-center space-y-3 max-w-2xl mx-auto pt-2">
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight apple-gradient-text">
+                    Defect Pattern Analytics.
+                  </h2>
+                  <p className="text-sm md:text-base text-zinc-400 font-normal">
+                    Aggregate telemetry metrics and live vector knowledge base growth.
+                  </p>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 text-center shadow-xl">
-                    <p className="text-xs text-slate-400 font-medium">Ingested Defects</p>
-                    <p className="text-3xl font-extrabold text-white mt-2">{analyticsData?.total_defects || 36}</p>
+                  <div className="apple-glass rounded-3xl p-8 text-center space-y-2 shadow-xl">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">Ingested Defects</p>
+                    <p className="text-5xl font-bold text-white tracking-tight">{analyticsData?.total_defects || 36}</p>
                   </div>
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 text-center shadow-xl">
-                    <p className="text-xs text-slate-400 font-medium">Dynamic KB Size</p>
-                    <p className="text-3xl font-extrabold text-[#38bdf8] mt-2">{analyticsData?.kb_size || 42}</p>
+                  <div className="apple-glass rounded-3xl p-8 text-center space-y-2 shadow-xl">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">Dynamic KB Size</p>
+                    <p className="text-5xl font-bold text-white tracking-tight">{analyticsData?.kb_size || 42}</p>
                   </div>
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 text-center shadow-xl">
-                    <p className="text-xs text-slate-400 font-medium">Critical Hotspots</p>
-                    <p className="text-3xl font-extrabold text-red-400 mt-2">{analyticsData?.critical_count || 14}</p>
+                  <div className="apple-glass rounded-3xl p-8 text-center space-y-2 shadow-xl">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">Critical Hotspots</p>
+                    <p className="text-5xl font-bold text-white tracking-tight">{analyticsData?.critical_count || 14}</p>
                   </div>
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 text-center shadow-xl">
-                    <p className="text-xs text-slate-400 font-medium">Avg Fix Accuracy</p>
-                    <p className="text-3xl font-extrabold text-emerald-400 mt-2">95.2%</p>
+                  <div className="apple-glass rounded-3xl p-8 text-center space-y-2 shadow-xl">
+                    <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">Avg Fix Accuracy</p>
+                    <p className="text-5xl font-bold text-white tracking-tight">95.2%</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-4 shadow-xl">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Severity Tier Breakdown</h3>
-                    <div className="space-y-3 text-xs pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="apple-glass rounded-3xl p-8 space-y-6 shadow-xl">
+                    <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Severity Distribution</h3>
+                    <div className="space-y-4 text-xs pt-1">
                       <div>
-                        <div className="flex justify-between text-slate-400 mb-1.5 font-medium"><span>Critical (P0)</span><span>38%</span></div>
-                        <div className="w-full bg-[#050914] h-2.5 rounded-full overflow-hidden"><div className="bg-red-500 h-full w-[38%]"></div></div>
+                        <div className="flex justify-between text-zinc-300 mb-2 font-medium"><span>Critical (P0)</span><span>38%</span></div>
+                        <div className="w-full bg-white/[0.05] h-2 rounded-full overflow-hidden"><div className="bg-white h-full w-[38%] rounded-full"></div></div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-slate-400 mb-1.5 font-medium"><span>High (P1)</span><span>32%</span></div>
-                        <div className="w-full bg-[#050914] h-2.5 rounded-full overflow-hidden"><div className="bg-yellow-500 h-full w-[32%]"></div></div>
+                        <div className="flex justify-between text-zinc-300 mb-2 font-medium"><span>High (P1)</span><span>32%</span></div>
+                        <div className="w-full bg-white/[0.05] h-2 rounded-full overflow-hidden"><div className="bg-zinc-400 h-full w-[32%] rounded-full"></div></div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-slate-400 mb-1.5 font-medium"><span>Medium (P2)</span><span>20%</span></div>
-                        <div className="w-full bg-[#050914] h-2.5 rounded-full overflow-hidden"><div className="bg-blue-500 h-full w-[20%]"></div></div>
+                        <div className="flex justify-between text-zinc-300 mb-2 font-medium"><span>Medium (P2)</span><span>20%</span></div>
+                        <div className="w-full bg-white/[0.05] h-2 rounded-full overflow-hidden"><div className="bg-zinc-600 h-full w-[20%] rounded-full"></div></div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-slate-400 mb-1.5 font-medium"><span>Low (P3)</span><span>10%</span></div>
-                        <div className="w-full bg-[#050914] h-2.5 rounded-full overflow-hidden"><div className="bg-emerald-500 h-full w-[10%]"></div></div>
+                        <div className="flex justify-between text-zinc-300 mb-2 font-medium"><span>Low (P3)</span><span>10%</span></div>
+                        <div className="w-full bg-white/[0.05] h-2 rounded-full overflow-hidden"><div className="bg-zinc-800 h-full w-[10%] rounded-full"></div></div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-4 shadow-xl">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Recurring Defect Clusters</h3>
-                    <div className="space-y-3 text-xs pt-1">
-                      <div className="p-3 bg-[#050914] border border-[#1e293b] rounded-xl flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Memory & GPU Texture Overflows</span>
-                        <span className="text-[#38bdf8] font-bold bg-[#0b1b33] px-2.5 py-1 rounded-md border border-[#0284c7]/40">12 Incidents</span>
+                  <div className="apple-glass rounded-3xl p-8 space-y-6 shadow-xl">
+                    <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Recurring Defect Clusters</h3>
+                    <div className="space-y-3.5 text-xs pt-1">
+                      <div className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl flex justify-between items-center">
+                        <span className="text-zinc-200 font-medium">Memory & GPU Texture Overflows</span>
+                        <span className="text-white font-bold bg-white/[0.08] px-3 py-1 rounded-full border border-white/10">12 Incidents</span>
                       </div>
-                      <div className="p-3 bg-[#050914] border border-[#1e293b] rounded-xl flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Database Connection Pool Timeouts</span>
-                        <span className="text-[#38bdf8] font-bold bg-[#0b1b33] px-2.5 py-1 rounded-md border border-[#0284c7]/40">9 Incidents</span>
+                      <div className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl flex justify-between items-center">
+                        <span className="text-zinc-200 font-medium">Database Connection Pool Timeouts</span>
+                        <span className="text-white font-bold bg-white/[0.08] px-3 py-1 rounded-full border border-white/10">9 Incidents</span>
                       </div>
-                      <div className="p-3 bg-[#050914] border border-[#1e293b] rounded-xl flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Unhandled Promise & Async Deadlocks</span>
-                        <span className="text-[#38bdf8] font-bold bg-[#0b1b33] px-2.5 py-1 rounded-md border border-[#0284c7]/40">7 Incidents</span>
+                      <div className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl flex justify-between items-center">
+                        <span className="text-zinc-200 font-medium">Unhandled Promise & Async Deadlocks</span>
+                        <span className="text-white font-bold bg-white/[0.08] px-3 py-1 rounded-full border border-white/10">7 Incidents</span>
                       </div>
                     </div>
                   </div>
@@ -441,72 +524,74 @@
 
             {/* VIEW 3: TECH STACK */}
             {view === "techstack" && (
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] flex items-center">
-                    <i className="fa-solid fa-layer-group mr-2"></i> SYSTEM ARCHITECTURE & TECH STACK
+              <div className="space-y-12">
+                <div className="text-center space-y-3 max-w-2xl mx-auto pt-2">
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight apple-gradient-text">
+                    Engineered for Precision.
                   </h2>
-                  <p className="text-xs text-slate-400 mt-1">Decoupled client-server platform engineered for high-throughput automated bug diagnosis.</p>
+                  <p className="text-sm md:text-base text-zinc-400 font-normal">
+                    Decoupled client-server architecture built for low-latency defect telemetry ingestion.
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-3.5 shadow-xl">
-                    <div className="w-10 h-10 rounded-xl bg-[#0c1a30] border border-[#0284c7]/40 flex items-center justify-center text-[#38bdf8] text-lg font-bold">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="apple-glass rounded-3xl p-8 md:p-10 space-y-4 shadow-xl">
+                    <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white text-sm">
                       <i className="fa-solid fa-server"></i>
                     </div>
-                    <h3 className="text-sm font-bold text-white">FastAPI Backend</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Asynchronous, high-performance web framework handling payload ingestion, CORS routing, and sequential multi-agent orchestration.
+                    <h3 className="text-lg font-bold text-white tracking-tight">FastAPI Asynchronous Engine</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      High-throughput ASGI backend framework coordinating sequential multi-agent task execution and REST telemetry routing.
                     </p>
-                    <div className="pt-2 flex flex-wrap gap-1 text-[10px]">
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">FastAPI</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Uvicorn</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Pydantic</span>
+                    <div className="flex flex-wrap gap-2 pt-2 text-[11px]">
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">FastAPI</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Uvicorn</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Pydantic v2</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-3.5 shadow-xl">
-                    <div className="w-10 h-10 rounded-xl bg-[#0c1a30] border border-[#0284c7]/40 flex items-center justify-center text-[#38bdf8] text-lg font-bold">
-                      <i className="fa-solid fa-brain"></i>
+                  <div className="apple-glass rounded-3xl p-8 md:p-10 space-y-4 shadow-xl">
+                    <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white text-sm">
+                      <i className="fa-solid fa-microchip"></i>
                     </div>
-                    <h3 className="text-sm font-bold text-white">AI Multi-Agent Core</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Five specialized agents (Log Parser, Triage, RAG Root Cause, Duplicate Finder, Fix Advisor) passing stateful telemetry context.
+                    <h3 className="text-lg font-bold text-white tracking-tight">AI Multi-Agent Pipeline</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Five specialized agents passing contextual states from regex parsing and triage to RAG synthesis and fix generation.
                     </p>
-                    <div className="pt-2 flex flex-wrap gap-1 text-[10px]">
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">PyTorch</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Transformers</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Regex NLP</span>
+                    <div className="flex flex-wrap gap-2 pt-2 text-[11px]">
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">PyTorch</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Transformers</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Regex NLP</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-3.5 shadow-xl">
-                    <div className="w-10 h-10 rounded-xl bg-[#0c1a30] border border-[#0284c7]/40 flex items-center justify-center text-[#38bdf8] text-lg font-bold">
+                  <div className="apple-glass rounded-3xl p-8 md:p-10 space-y-4 shadow-xl">
+                    <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white text-sm">
                       <i className="fa-solid fa-database"></i>
                     </div>
-                    <h3 className="text-sm font-bold text-white">ChromaDB Vector Store</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Persistent local vector embedding store seeded with Mozilla, Apache, and Eclipse defect benchmarks for sub-200ms cosine similarity recall.
+                    <h3 className="text-lg font-bold text-white tracking-tight">ChromaDB Vector Store</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Persistent vector memory indexed with open-source defect corpora (Mozilla, Eclipse, Apache) supporting active learning.
                     </p>
-                    <div className="pt-2 flex flex-wrap gap-1 text-[10px]">
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">ChromaDB</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">HNSW Index</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Active Learning</span>
+                    <div className="flex flex-wrap gap-2 pt-2 text-[11px]">
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">ChromaDB</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">HNSW Index</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Active Learning</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-3.5 shadow-xl">
-                    <div className="w-10 h-10 rounded-xl bg-[#0c1a30] border border-[#0284c7]/40 flex items-center justify-center text-[#38bdf8] text-lg font-bold">
+                  <div className="apple-glass rounded-3xl p-8 md:p-10 space-y-4 shadow-xl">
+                    <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white text-sm">
                       <i className="fa-brands fa-react"></i>
                     </div>
-                    <h3 className="text-sm font-bold text-white">Modern Frontend</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      React single-page dashboard styled with Tailwind CSS, supporting dark-mode aesthetic, live state binding, and telemetry visualizers.
+                    <h3 className="text-lg font-bold text-white tracking-tight">Modern Interface</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Single-page client interface built with React 18 and Tailwind CSS, featuring frosted glass aesthetics and live telemetry visualizers.
                     </p>
-                    <div className="pt-2 flex flex-wrap gap-1 text-[10px]">
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">React 18</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">Tailwind CSS</span>
-                      <span className="px-2 py-0.5 bg-[#050914] border border-[#1e293b] rounded text-slate-300">FontAwesome</span>
+                    <div className="flex flex-wrap gap-2 pt-2 text-[11px]">
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">React 18</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Tailwind CSS</span>
+                      <span className="px-3 py-1 bg-white/[0.04] border border-white/10 rounded-full text-zinc-300">Glassmorphism</span>
                     </div>
                   </div>
                 </div>
@@ -515,40 +600,42 @@
 
             {/* VIEW 4: FAQ'S */}
             {view === "faqs" && (
-              <div className="space-y-8 max-w-4xl mx-auto">
-                <div>
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-[#38bdf8] flex items-center">
-                    <i className="fa-solid fa-circle-question mr-2"></i> FREQUENTLY ASKED QUESTIONS (FAQ'S)
+              <div className="space-y-12 max-w-3xl mx-auto">
+                <div className="text-center space-y-3 pt-2">
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight apple-gradient-text">
+                    Questions & Answers.
                   </h2>
-                  <p className="text-xs text-slate-400 mt-1">Core technical answers regarding the multi-agent pipeline and active learning architecture.</p>
+                  <p className="text-sm md:text-base text-zinc-400 font-normal">
+                    Architecture and diagnostic capabilities overview.
+                  </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-2 shadow-xl">
-                    <h3 className="text-sm font-bold text-[#38bdf8]">1. How does the 5-agent pipeline function?</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      The pipeline orchestrates specialized agents sequentially: Log Analysis isolates line numbers and error types; Triage calculates severity and priority; Root Cause queries ChromaDB via RAG for evidence-backed hypotheses; Duplicate Detection matches past issues; and Remediation outputs actionable code patches and best practices.
+                  <div className="apple-glass rounded-3xl p-8 space-y-3">
+                    <h3 className="text-base font-semibold text-white tracking-tight">How does the 5-agent pipeline orchestrate?</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Defect logs pass sequentially from log extraction and severity triage to RAG root-cause synthesis, duplicate detection, and final remediation patch recommendations.
                     </p>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-2 shadow-xl">
-                    <h3 className="text-sm font-bold text-[#38bdf8]">2. How does the Active Learning Knowledge Base growth loop work?</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      When an engineer validates a suggested fix, clicking "Confirm Fix & Add to Knowledge Base" immediately vectorizes and indexes the resolution back into ChromaDB. Future defect queries directly benefit from these validated solutions.
+                  <div className="apple-glass rounded-3xl p-8 space-y-3">
+                    <h3 className="text-base font-semibold text-white tracking-tight">How does Active Learning dynamically expand the Knowledge Base?</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Confirming a suggested fix automatically vectorizes and saves the resolved incident back into ChromaDB so future queries benefit immediately.
                     </p>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-2 shadow-xl">
-                    <h3 className="text-sm font-bold text-[#38bdf8]">3. Which programming languages and crash stacks are supported?</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      The platform has been verified across 5 major stacks: C++ (graphics/native memory errors), Java (Spring/JDBC database pool timeouts), Python (buffer/memory exhaustion), JavaScript/Node.js (unhandled promise rejections), and Go (concurrency deadlocks).
+                  <div className="apple-glass rounded-3xl p-8 space-y-3">
+                    <h3 className="text-base font-semibold text-white tracking-tight">Which technology stacks are verified?</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Verified across 5 major ecosystems: C++ (graphics overflows), Java (database connection pool timeouts), Python (memory allocation), Node.js (unhandled promise rejections), and Go (concurrency deadlocks).
                     </p>
                   </div>
 
-                  <div className="bg-[#090f1d] border border-[#1e293b] rounded-2xl p-6 space-y-2 shadow-xl">
-                    <h3 className="text-sm font-bold text-[#38bdf8]">4. Does the system send code to third-party public cloud APIs?</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      No. All telemetry preprocessing, chunking, and ChromaDB vector querying run entirely on-premise or inside your isolated hosting environment, guaranteeing source code data privacy with zero data leakage.
+                  <div className="apple-glass rounded-3xl p-8 space-y-3">
+                    <h3 className="text-base font-semibold text-white tracking-tight">Is source code telemetry private?</h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+                      Yes. All preprocessing, chunking, and ChromaDB vector queries run on-premise without routing source logs to third-party public cloud endpoints.
                     </p>
                   </div>
                 </div>
@@ -557,9 +644,9 @@
 
           </main>
 
-          {/* Footer */}
-          <footer className="border-t border-[#111827] bg-[#02050d] py-4 px-6 text-center text-xs text-slate-500">
-            Intelligent Bug Diagnosis Platform &copy; 2026. Built with FastAPI, React, PyTorch & ChromaDB.
+          {/* Minimalist Apple Footer */}
+          <footer className="border-t border-white/[0.08] bg-black py-8 px-8 text-center text-xs text-zinc-600">
+            Intelligent Bug Diagnosis Platform &copy; 2026. All rights reserved.
           </footer>
         </div>
       );
